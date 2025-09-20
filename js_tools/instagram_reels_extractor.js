@@ -21,11 +21,12 @@
     
     // Configuration
     const CONFIG = {
-        maxReels: 50,           // Maximum number of Reels to extract
-        scrollDelay: 2000,      // Delay between scrolls (ms)
-        maxScrolls: 10,         // Maximum number of scroll attempts
-        autoScroll: true,       // Automatically scroll to load more Reels
-        showProgress: true      // Show progress during extraction
+        maxReels: 20,           // Maximum number of Reels to extract (focus on recent ones)
+        scrollDelay: 1500,      // Delay between scrolls (ms) - faster for recent content
+        maxScrolls: 3,          // Maximum number of scroll attempts (focus on top content)
+        autoScroll: false,      // Don't auto-scroll - focus on visible content first
+        showProgress: true,     // Show progress during extraction
+        prioritizeVisible: true // Prioritize currently visible Reels
     };
     
     // Storage for found URLs
@@ -34,64 +35,120 @@
     let lastUrlCount = 0;
     
     /**
-     * Extract Reels URLs from the current page
+     * Extract Reels URLs from the current page, prioritizing visible ones
      */
     function extractReelsUrls() {
         const reels = [];
         
-        // Method 1: Look for links with href containing /reel/
-        const links = document.querySelectorAll('a[href*="/reel/"]');
-        links.forEach(link => {
-            const href = link.href;
-            if (href && href.includes('/reel/') && !foundUrls.has(href)) {
-                foundUrls.add(href);
-                reels.push(href);
+        // Method 1: Look for visible Reels in the main content area (PRIORITY)
+        // These are the most recent Reels that are currently visible
+        const mainContentSelectors = [
+            'main a[href*="/reel/"]',           // Main content area
+            'article a[href*="/reel/"]',        // Article elements
+            '[role="main"] a[href*="/reel/"]',  // Main role elements
+            'section a[href*="/reel/"]'         // Section elements
+        ];
+        
+        mainContentSelectors.forEach(selector => {
+            const links = document.querySelectorAll(selector);
+            links.forEach(link => {
+                const href = link.href;
+                if (href && href.includes('/reel/') && !foundUrls.has(href)) {
+                    foundUrls.add(href);
+                    reels.push({
+                        url: href,
+                        element: link,
+                        priority: 1, // High priority for visible elements
+                        position: getElementPosition(link)
+                    });
+                }
+            });
+        });
+        
+        // Method 2: Look for Reels in the viewport (currently visible)
+        const viewportReels = document.querySelectorAll('a[href*="/reel/"]');
+        viewportReels.forEach(link => {
+            const rect = link.getBoundingClientRect();
+            const isInViewport = rect.top >= 0 && rect.left >= 0 && 
+                               rect.bottom <= window.innerHeight && 
+                               rect.right <= window.innerWidth;
+            
+            if (isInViewport) {
+                const href = link.href;
+                if (href && href.includes('/reel/') && !foundUrls.has(href)) {
+                    foundUrls.add(href);
+                    reels.push({
+                        url: href,
+                        element: link,
+                        priority: 0, // Highest priority for viewport elements
+                        position: getElementPosition(link)
+                    });
+                }
             }
         });
         
-        // Method 2: Look in script tags for Reels URLs
-        const scripts = document.querySelectorAll('script');
-        scripts.forEach(script => {
-            if (script.textContent) {
-                // Look for Reels URLs in various formats
-                const patterns = [
-                    /https:\/\/www\.instagram\.com\/reel\/[A-Za-z0-9_-]+\/?/g,
-                    /"\/reel\/[A-Za-z0-9_-]+\/?/g,
-                    /instagram\.com\/reel\/[A-Za-z0-9_-]+\/?/g
-                ];
-                
-                patterns.forEach(pattern => {
-                    const matches = script.textContent.match(pattern);
-                    if (matches) {
-                        matches.forEach(match => {
-                            let url = match;
-                            if (url.startsWith('/')) {
-                                url = 'https://www.instagram.com' + url;
-                            } else if (!url.startsWith('http')) {
-                                url = 'https://www.instagram.com/reel/' + url;
-                            }
-                            
-                            if (url.includes('/reel/') && !foundUrls.has(url)) {
-                                foundUrls.add(url);
-                                reels.push(url);
-                            }
-                        });
-                    }
-                });
+        // Method 3: Look in script tags for additional Reels (LOWER PRIORITY)
+        // Only if we don't have enough visible Reels
+        if (reels.length < CONFIG.maxReels) {
+            const scripts = document.querySelectorAll('script');
+            scripts.forEach(script => {
+                if (script.textContent) {
+                    const patterns = [
+                        /https:\/\/www\.instagram\.com\/reel\/[A-Za-z0-9_-]+\/?/g,
+                        /"\/reel\/[A-Za-z0-9_-]+\/?/g,
+                        /instagram\.com\/reel\/[A-Za-z0-9_-]+\/?/g
+                    ];
+                    
+                    patterns.forEach(pattern => {
+                        const matches = script.textContent.match(pattern);
+                        if (matches) {
+                            matches.forEach(match => {
+                                let url = match;
+                                if (url.startsWith('/')) {
+                                    url = 'https://www.instagram.com' + url;
+                                } else if (!url.startsWith('http')) {
+                                    url = 'https://www.instagram.com/reel/' + url;
+                                }
+                                
+                                if (url.includes('/reel/') && !foundUrls.has(url)) {
+                                    foundUrls.add(url);
+                                    reels.push({
+                                        url: url,
+                                        element: null,
+                                        priority: 3, // Lower priority for script content
+                                        position: 999999
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        
+        // Sort by priority and position (most recent first)
+        reels.sort((a, b) => {
+            if (a.priority !== b.priority) {
+                return a.priority - b.priority; // Lower priority number = higher priority
             }
+            return a.position - b.position; // Lower position = higher on page
         });
         
-        // Method 3: Look for Reels in data attributes
-        const elements = document.querySelectorAll('[data-testid*="reel"], [href*="/reel/"]');
-        elements.forEach(element => {
-            const href = element.href || element.getAttribute('href');
-            if (href && href.includes('/reel/') && !foundUrls.has(href)) {
-                foundUrls.add(href);
-                reels.push(href);
-            }
-        });
-        
-        return reels;
+        // Return only URLs, limited to maxReels
+        return reels.slice(0, CONFIG.maxReels).map(item => item.url);
+    }
+    
+    /**
+     * Get the position of an element on the page
+     */
+    function getElementPosition(element) {
+        let position = 0;
+        let current = element;
+        while (current && current.parentNode) {
+            position += Array.from(current.parentNode.children).indexOf(current);
+            current = current.parentNode;
+        }
+        return position;
     }
     
     /**
@@ -142,14 +199,20 @@
         console.log('🔍 Starting Reels extraction...');
         console.log(`📋 Max Reels: ${CONFIG.maxReels}`);
         console.log(`🔄 Auto-scroll: ${CONFIG.autoScroll ? 'Enabled' : 'Disabled'}`);
+        console.log(`👁️ Prioritize Visible: ${CONFIG.prioritizeVisible ? 'Enabled' : 'Disabled'}`);
         console.log('');
         
-        // Initial extraction
+        // First, extract visible Reels without scrolling
+        console.log('📱 Extracting currently visible Reels...');
         let newReels = extractReelsUrls();
         showProgress();
         
-        // Auto-scroll to load more Reels
-        if (CONFIG.autoScroll) {
+        // If we have enough visible Reels, we're done
+        if (foundUrls.size >= CONFIG.maxReels) {
+            console.log(`✅ Found enough visible Reels (${foundUrls.size})`);
+        } else if (CONFIG.autoScroll) {
+            console.log('📜 Scrolling to load more Reels...');
+            // Auto-scroll to load more Reels only if needed
             while (scrollCount < CONFIG.maxScrolls && foundUrls.size < CONFIG.maxReels) {
                 scrollCount++;
                 
@@ -169,6 +232,8 @@
                     break;
                 }
             }
+        } else {
+            console.log('📱 Using only visible Reels (auto-scroll disabled)');
         }
         
         // Clean and sort URLs

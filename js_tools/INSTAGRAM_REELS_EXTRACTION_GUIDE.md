@@ -5,7 +5,7 @@ This guide provides multiple methods to extract Reels URLs from Instagram profil
 ## Method 1: JavaScript Console (Recommended)
 
 ### Step 1: Open Instagram Profile
-1. Go to the Instagram profile's Reels page: `https://www.instagram.com/bruno.casasdotejo/reels/`
+1. Go to the Instagram profile's Reels page: 
 2. Scroll down to load more Reels (optional, but recommended for more URLs)
 
 ### Step 2: Open Developer Console
