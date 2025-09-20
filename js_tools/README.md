@@ -1,6 +1,6 @@
 # JavaScript Tools for Instagram Reels URL Extraction
 
-This folder contains JavaScript tools for extracting Reels URLs from Instagram profile pages.
+This folder contains JavaScript tools for extracting Reels URLs from Instagram profile pages. These tools are designed to be used manually in the browser console.
 
 ## Files
 
