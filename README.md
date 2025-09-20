@@ -88,13 +88,15 @@ Since Instagram restricts automated extraction, use these methods:
 1. Go to the Instagram profile's Reels page
 2. Open Developer Tools (F12) → Console tab
 3. Copy and paste the contents of `js_tools/instagram_reels_extractor.js`
-4. Press Enter to run - URLs will be automatically extracted and copied
-5. Use `create_structured_urls.py` to format them properly
+4. Press Enter to run - structured URLs will be automatically copied
+5. Paste the clipboard content into a text file (e.g., `urls.txt`)
+6. Run transcription directly: `python3 main.py -f urls.txt -u username`
 
 #### Browser Bookmarklet Method
 1. Create a bookmark with the code from `js_tools/instagram_reels_bookmarklet.js`
 2. Go to Instagram Reels page and click the bookmark
-3. URLs will be automatically extracted and copied
+3. Structured URLs will be automatically copied to clipboard
+4. Paste into a text file and run: `python3 main.py -f urls.txt -u username`
 
 #### Simple Console Method
 ```javascript
@@ -248,6 +250,6 @@ These tools provide:
 1. **Go to Instagram Reels page**: `https://www.instagram.com/username/reels/`
 2. **Open Console**: Press F12 → Console tab
 3. **Run Script**: Copy and paste `js_tools/instagram_reels_extractor.js`
-4. **Get URLs**: Automatically extracted and copied to clipboard
-5. **Create File**: Use `create_structured_urls.py` to format
-6. **Transcribe**: Run the transcriber with your URLs file
+4. **Get Structured URLs**: Automatically copied to clipboard in correct format
+5. **Paste to File**: Save clipboard content as `urls.txt`
+6. **Transcribe**: Run `python3 main.py -f urls.txt -u username`

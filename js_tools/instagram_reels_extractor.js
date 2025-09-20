@@ -204,28 +204,31 @@
                 console.log(`${index + 1}. ${url}`);
             });
             
-            // Copy to clipboard
-            if (navigator.clipboard) {
-                try {
-                    await navigator.clipboard.writeText(sortedUrls.join('\n'));
-                    console.log('');
-                    console.log('📋 URLs copied to clipboard!');
-                    console.log('');
-                    console.log('💡 Next steps:');
-                    console.log('1. Create a structured URLs file:');
-                    console.log('   python3 create_structured_urls.py bruno.casasdotejo --interactive');
-                    console.log('2. Or create manually with format:');
-                    console.log('   1. https://www.instagram.com/reel/ABC123/');
-                    console.log('   2. https://www.instagram.com/reel/DEF456/');
-                    console.log('3. Run transcription:');
-                    console.log('   python3 main.py -f urls.txt -u bruno.casasdotejo');
-                } catch (err) {
-                    console.log('❌ Could not copy to clipboard:', err);
-                    console.log('📋 Please copy the URLs manually from above');
-                }
-            } else {
-                console.log('❌ Clipboard not available, please copy URLs manually');
+        // Generate structured format for direct use with main.py
+        const structuredUrls = sortedUrls.map((url, index) => `${index + 1}. ${url}`).join('\n');
+        
+        // Copy structured URLs to clipboard
+        if (navigator.clipboard) {
+            try {
+                await navigator.clipboard.writeText(structuredUrls);
+                console.log('');
+                console.log('📋 Structured URLs copied to clipboard!');
+                console.log('');
+                console.log('💡 Next steps:');
+                console.log('1. Paste the clipboard content into a text file (e.g., urls.txt)');
+                console.log('2. Run transcription directly:');
+                console.log('   python3 main.py -f urls.txt -u bruno.casasdotejo');
+                console.log('3. Or transcribe specific videos:');
+                console.log('   python3 main.py -f urls.txt -u bruno.casasdotejo -s "1,3,5"');
+                console.log('   python3 main.py -f urls.txt -u bruno.casasdotejo -s "1-10"');
+                console.log('   python3 main.py -f urls.txt -u bruno.casasdotejo -s "2-5,8,10-12"');
+            } catch (err) {
+                console.log('❌ Could not copy to clipboard:', err);
+                console.log('📋 Please copy the structured URLs manually from above');
             }
+        } else {
+            console.log('❌ Clipboard not available, please copy structured URLs manually');
+        }
         } else {
             console.log('❌ No Reels found on this page');
             console.log('💡 Make sure you are on the Reels tab of an Instagram profile');
