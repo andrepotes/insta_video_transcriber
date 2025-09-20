@@ -131,7 +131,7 @@
             if (a.priority !== b.priority) {
                 return a.priority - b.priority; // Lower priority number = higher priority
             }
-            return a.position - b.position; // Lower position = higher on page
+            return a.position - b.position; // Lower position = higher on page (most recent)
         });
         
         // Return only URLs, limited to maxReels
@@ -236,9 +236,10 @@
             console.log('📱 Using only visible Reels (auto-scroll disabled)');
         }
         
-        // Clean and sort URLs
-        const cleanUrls = cleanUrls(Array.from(foundUrls));
-        const sortedUrls = cleanUrls.sort();
+        // Clean URLs and maintain the order (most recent first)
+        const cleanedUrls = cleanUrls(Array.from(foundUrls));
+        // Don't sort alphabetically - keep the priority order (most recent first)
+        const sortedUrls = cleanedUrls;
         
         console.log('');
         console.log('✅ Extraction Complete!');
