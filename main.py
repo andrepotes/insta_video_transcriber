@@ -146,6 +146,35 @@ class InstagramTranscriber:
         output_file = self.save_transcription(transcription, url)
         return output_file
     
+    def transcribe_video_direct(self, url):
+        """Transcribe a video and return the text directly without saving individual file."""
+        if not self.is_valid_instagram_url(url):
+            print("Error: Please provide a valid Instagram post URL")
+            return None
+        
+        # Download video
+        video_path = self.download_video(url)
+        if not video_path:
+            return None
+        
+        # Extract audio
+        audio = self.extract_audio(video_path)
+        if not audio:
+            return None
+        
+        # Transcribe audio
+        transcription = self.transcribe_audio(audio)
+        if not transcription:
+            return None
+        
+        # Clean up temporary files
+        try:
+            os.remove(video_path)
+        except:
+            pass
+        
+        return transcription
+    
     def parse_selection(self, selection_str, total_videos):
         """Parse selection string and return list of video indices."""
         if not selection_str:
@@ -234,28 +263,11 @@ class InstagramTranscriber:
             if progress_callback:
                 progress_callback(i, selected_count, urls[video_index - 1])
             
-            transcription = self.transcribe_video(urls[video_index - 1])
-            if transcription:
-                # Read the transcription text from the saved file
-                try:
-                    with open(transcription, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                        # Extract just the transcription text (skip metadata)
-                        lines = content.split('\n')
-                        text_lines = []
-                        skip_metadata = True
-                        for line in lines:
-                            if skip_metadata and line.startswith('=' * 50):
-                                skip_metadata = False
-                                continue
-                            if not skip_metadata and line.strip():
-                                text_lines.append(line.strip())
-                        
-                        transcription_text = ' '.join(text_lines)
-                        transcriptions.append(transcription_text)
-                        print(f"Video {i} transcribed successfully")
-                except Exception as e:
-                    print(f"Error reading transcription for video {i}: {e}")
+            # Transcribe video directly without saving individual file
+            transcription_text = self.transcribe_video_direct(urls[video_index - 1])
+            if transcription_text:
+                transcriptions.append(transcription_text)
+                print(f"Video {i} transcribed successfully")
             else:
                 print(f"Failed to transcribe video {i}")
                 transcriptions.append("")  # Add empty string for failed transcriptions
