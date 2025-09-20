@@ -221,11 +221,24 @@ transcriptions/
 ### Quick Start
 
 ```bash
-# Create sample URLs file
-echo "1. https://www.instagram.com/reel/VIDEO_ID/" > sample.txt
+# Create sample URLs file in inputs folder
+echo "1. https://www.instagram.com/reel/VIDEO_ID/" > inputs/sample.txt
 
-# Transcribe the video
+# Transcribe the video (automatically finds file in inputs/)
 python3 main.py -f sample.txt -u username
+```
+
+### File Structure
+
+```
+insta_video_transcriber/
+├── inputs/                    # User input files (ignored by git)
+│   ├── README.md             # Instructions for input files
+│   └── your_urls.txt         # Your URLs file here
+├── transcriptions/           # Generated transcription files
+├── js_tools/                 # JavaScript extraction tools
+├── tests/                    # Test files and data
+└── main.py                   # Main transcription script
 ```
 
 This tool provides a clean, structured approach to batch Instagram video transcription with flexible selection options!
