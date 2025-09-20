@@ -251,11 +251,11 @@
                 console.log('💡 Next steps:');
                 console.log('1. Paste the clipboard content into a text file in the inputs folder (e.g., inputs/urls.txt)');
                 console.log('2. Run transcription directly:');
-                console.log('   python3 main.py -f urls.txt -u username');
+                console.log('   python3 main.py -f urls.txt');
                 console.log('3. Or transcribe specific videos:');
-                console.log('   python3 main.py -f urls.txt -u username -s "1,3,5"');
-                console.log('   python3 main.py -f urls.txt -u username -s "1-10"');
-                console.log('   python3 main.py -f urls.txt -u username -s "2-5,8,10-12"');
+                console.log('   python3 main.py -f urls.txt -s "1,3,5"');
+                console.log('   python3 main.py -f urls.txt -s "1-10"');
+                console.log('   python3 main.py -f urls.txt -s "2-5,8,10-12"');
             } catch (err) {
                 console.log('❌ Could not copy to clipboard:', err);
                 console.log('📋 Please copy the structured URLs manually from above');

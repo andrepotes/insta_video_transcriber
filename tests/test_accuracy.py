@@ -82,7 +82,7 @@ def test_transcription_accuracy():
     
     # Run transcription
     print("Running transcription...")
-    os.system(f"python3 main.py -f {urls_file} -u username")
+    os.system(f"python3 main.py -f {urls_file}")
     print()
     
     # Check results

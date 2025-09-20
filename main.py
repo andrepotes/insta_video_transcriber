@@ -252,7 +252,7 @@ class InstagramTranscriber:
             print(f"Error loading URLs from file: {e}")
             return []
     
-    def transcribe_selected_videos(self, urls, selected_indices, username="unknown"):
+    def transcribe_selected_videos(self, urls, selected_indices):
         """Transcribe selected videos from the URLs list."""
         if not urls:
             print("No URLs provided for batch processing")
@@ -288,7 +288,7 @@ class InstagramTranscriber:
                 transcriptions.append("")  # Add empty string for failed transcriptions
         
         # Save merged transcription
-        output_file = self.save_batch_transcription(transcriptions, selected_indices, username)
+        output_file = self.save_batch_transcription(transcriptions, selected_indices)
         
         # Summary
         successful = sum(1 for t in transcriptions if t.strip())
@@ -298,15 +298,14 @@ class InstagramTranscriber:
         
         return output_file
     
-    def save_batch_transcription(self, transcriptions, selected_indices, username):
+    def save_batch_transcription(self, transcriptions, selected_indices):
         """Save merged transcriptions from selected videos."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"instagram_{username}_batch_transcription_{timestamp}.txt"
+        filename = f"instagram_batch_transcription_{timestamp}.txt"
         filepath = self.output_dir / filename
         
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(f"Instagram Batch Transcription\n")
-            f.write(f"Username: @{username}\n")
             f.write(f"Selected Videos: {', '.join(map(str, selected_indices))}\n")
             f.write(f"Total Videos: {len(transcriptions)}\n")
             f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
@@ -330,8 +329,6 @@ def main():
     parser.add_argument('-o', '--output', default='transcriptions', 
                         help='Output directory for transcriptions (default: transcriptions)')
     parser.add_argument('-s', '--select', help='Video selection (e.g., "1,3,5" or "1-10" or "2-5,8,10-12")')
-    parser.add_argument('-u', '--username', default='unknown',
-                        help='Username for batch processing (default: unknown)')
     
     args = parser.parse_args()
     
@@ -364,7 +361,7 @@ def main():
             sys.exit(1)
         
         # Transcribe selected videos
-        result = transcriber.transcribe_selected_videos(urls, selected_indices, args.username)
+        result = transcriber.transcribe_selected_videos(urls, selected_indices)
         
         if result:
             print(f"\nBatch transcription completed successfully!")

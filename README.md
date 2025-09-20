@@ -90,13 +90,13 @@ Since Instagram restricts automated extraction, use these methods:
 3. Copy and paste the contents of `js_tools/instagram_reels_extractor.js`
 4. Press Enter to run - structured URLs will be automatically copied
 5. Paste the clipboard content into a text file (e.g., `urls.txt`)
-6. Run transcription directly: `python3 main.py -f urls.txt -u username`
+6. Run transcription directly: `python3 main.py -f urls.txt`
 
 #### Browser Bookmarklet Method
 1. Create a bookmark with the code from `js_tools/instagram_reels_bookmarklet.js`
 2. Go to Instagram Reels page and click the bookmark
 3. Structured URLs will be automatically copied to clipboard
-4. Paste into a text file and run: `python3 main.py -f urls.txt -u username`
+4. Paste into a text file and run: `python3 main.py -f urls.txt`
 
 #### Simple Console Method
 ```javascript
@@ -120,7 +120,7 @@ navigator.clipboard.writeText(reels.join('\n'));
 python3 tests/test_accuracy.py
 
 # Test with sample data
-python3 main.py -f test_structured_urls.txt -u username
+python3 main.py -f test_structured_urls.txt
 ```
 
 #### Test Data Structure
@@ -152,16 +152,16 @@ Options:
 
 ```bash
 # Select videos 1, 3, and 5
-python3 main.py -f urls.txt -u username -s "1,3,5"
+python3 main.py -f urls.txt -s "1,3,5"
 
 # Select videos 1 through 10
-python3 main.py -f urls.txt -u username -s "1-10"
+python3 main.py -f urls.txt -s "1-10"
 
 # Select videos 2 through 5, 8, and 10 through 12
-python3 main.py -f urls.txt -u username -s "2-5,8,10-12"
+python3 main.py -f urls.txt -s "2-5,8,10-12"
 
 # Select all videos (no -s option needed)
-python3 main.py -f urls.txt -u username
+python3 main.py -f urls.txt
 ```
 
 ## How It Works
@@ -215,7 +215,7 @@ transcriptions/
    ```
 3. **Transcribe selected videos**:
    ```bash
-   python3 main.py -f urls.txt -u username -s "1-4"
+   python3 main.py -f urls.txt -s "1-4"
    ```
 
 ### Quick Start
@@ -225,7 +225,7 @@ transcriptions/
 echo "1. https://www.instagram.com/reel/VIDEO_ID/" > inputs/sample.txt
 
 # Transcribe the video (automatically finds file in inputs/)
-python3 main.py -f sample.txt -u username
+python3 main.py -f sample.txt
 ```
 
 ### File Structure
@@ -265,4 +265,4 @@ These tools provide:
 3. **Run Script**: Copy and paste `js_tools/instagram_reels_extractor.js`
 4. **Get Structured URLs**: Automatically copied to clipboard in correct format
 5. **Paste to File**: Save clipboard content as `inputs/urls.txt`
-6. **Transcribe**: Run `python3 main.py -f urls.txt -u username`
+6. **Transcribe**: Run `python3 main.py -f urls.txt`
