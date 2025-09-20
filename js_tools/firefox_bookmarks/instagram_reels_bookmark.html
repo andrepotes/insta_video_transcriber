@@ -1,0 +1,10 @@
+<!DOCTYPE NETSCAPE-Bookmark-file-1>
+<!-- This is an automatically generated file.
+     It will be imported and its contents will be replaced.
+     DO NOT EDIT! -->
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+<TITLE>Bookmarks</TITLE>
+<H1>Bookmarks</H1>
+<DL><p>
+    <DT><A HREF="javascript:(function(){console.log('🎬 Instagram Reels Extractor');const foundUrls=new Set();function extractReels(){const reels=[];document.querySelectorAll('a[href*="/reel/"]').forEach(link=>{const href=link.href;if(href&&href.includes('/reel/')&&!foundUrls.has(href)){foundUrls.add(href);reels.push(href);}});document.querySelectorAll('script').forEach(script=>{if(script.textContent){const patterns=[/https:\/\/www\.instagram\.com\/reel\/[A-Za-z0-9_-]+\/?/g,/\/reel\/[A-Za-z0-9_-]+\/?/g];patterns.forEach(pattern=>{const matches=script.textContent.match(pattern);if(matches){matches.forEach(match=>{let url=match;if(url.startsWith('/')){url='https://www.instagram.com'+url;}else if(!url.startsWith('http')){url='https://www.instagram.com/reel/'+url;}if(url.includes('/reel/')&&!foundUrls.has(url)){foundUrls.add(url);reels.push(url);}});}});}});return reels;}function cleanUrls(urls){return urls.map(url=>{let clean=url.split('?')[0];if(!clean.endsWith('/')){clean+='/';}return clean;}).sort();}async function scrollAndExtract(){let scrollCount=0;const maxScrolls=5;while(scrollCount<maxScrolls&&foundUrls.size<50){scrollCount++;window.scrollTo(0,document.body.scrollHeight);await new Promise(r=>setTimeout(r,2000));const newReels=extractReels();if(foundUrls.size===0)break;}return cleanUrls(Array.from(foundUrls));}scrollAndExtract().then(urls=>{console.log(`✅ Found ${urls.length} Reels:`);urls.forEach((url,i)=>console.log(`${i+1}. ${url}`));if(navigator.clipboard){navigator.clipboard.writeText(urls.join('\n')).then(()=>{alert(`📋 Copied ${urls.length} Reels URLs to clipboard!`);}).catch(()=>{console.log('❌ Could not copy to clipboard');});}else{console.log('❌ Clipboard not available');}});})();" ADD_DATE="1758385518" LAST_MODIFIED="1758385518" ID="instagram-reels-extractor">🎬 Extract Instagram Reels</A>
+</DL><p>

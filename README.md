@@ -251,3 +251,22 @@ These tools provide:
 4. **Get URLs**: Automatically extracted and copied to clipboard
 5. **Create File**: Use `create_structured_urls.py` to format
 6. **Transcribe**: Run the transcriber with your URLs file
+
+### Firefox Automation (One-Click Setup)
+
+For Firefox users, automated bookmark creation is available:
+
+```bash
+# Create Firefox bookmark and extension files
+cd js_tools
+python3 setup_firefox_tools.py
+
+# Or run individual scripts
+python3 create_firefox_bookmark.py    # Creates bookmark files
+python3 create_firefox_extension.py   # Creates Firefox extension
+```
+
+**Generated Files:**
+- `firefox_bookmarks/instagram_reels_bookmark.html` - Import this into Firefox
+- `firefox_extension/` - Load as temporary extension in `about:debugging`
+- Detailed instructions in each folder's README files
