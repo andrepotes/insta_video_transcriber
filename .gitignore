@@ -38,6 +38,7 @@ Thumbs.db
 # Project specific
 transcriptions/
 temp/
+inputs/
 *.mp4
 *.wav
 *.mp3

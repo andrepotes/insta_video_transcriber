@@ -22,8 +22,8 @@
     // Configuration
     const CONFIG = {
         maxReels: 200,          // Maximum number of Reels to extract (increased for more videos)
-        scrollDelay: 1500,      // Delay between scrolls (ms) - faster for recent content
-        maxScrolls: 8,          // Maximum number of scroll attempts (increased for more content)
+        scrollDelay: 2500,      // Delay between scrolls (ms) - increased for better loading
+        maxScrolls: 10,         // Maximum number of scroll attempts (increased for more content)
         autoScroll: true,       // Enable auto-scroll to load more Reels
         showProgress: true,     // Show progress during extraction
         prioritizeVisible: true // Prioritize currently visible Reels
@@ -121,14 +121,28 @@
     function scrollToLoadMore() {
         return new Promise((resolve) => {
             const currentHeight = document.body.scrollHeight;
+            const currentUrlCount = foundUrls.size;
             
-            // Scroll to bottom
+            // Try multiple scroll strategies
+            // 1. Scroll to bottom
             window.scrollTo(0, document.body.scrollHeight);
+            
+            // 2. Scroll a bit up and down to trigger lazy loading
+            setTimeout(() => {
+                window.scrollTo(0, document.body.scrollHeight - 1000);
+                setTimeout(() => {
+                    window.scrollTo(0, document.body.scrollHeight);
+                }, 200);
+            }, 200);
             
             // Wait for new content to load
             setTimeout(() => {
                 const newHeight = document.body.scrollHeight;
-                resolve(newHeight > currentHeight);
+                const newUrlCount = foundUrls.size;
+                
+                // Check both height increase and new URLs found
+                const hasNewContent = newHeight > currentHeight || newUrlCount > currentUrlCount;
+                resolve(hasNewContent);
             }, CONFIG.scrollDelay);
         });
     }
@@ -162,25 +176,45 @@
             console.log(`✅ Found enough visible Reels (${foundUrls.size})`);
         } else if (CONFIG.autoScroll) {
             console.log('📜 Scrolling to load more Reels...');
+            let noNewContentCount = 0;
+            const maxNoNewContent = 2; // Allow 2 attempts with no new content before stopping
+            
             // Auto-scroll to load more Reels only if needed
             while (scrollCount < CONFIG.maxScrolls && foundUrls.size < CONFIG.maxReels) {
                 scrollCount++;
+                const beforeScroll = foundUrls.size;
                 
                 const hasNewContent = await scrollToLoadMore();
-                if (!hasNewContent) {
-                    console.log('📄 No new content loaded, stopping scroll');
-                    break;
-                }
                 
                 // Extract new Reels after scrolling
                 newReels = extractReelsUrls();
+                const afterScroll = foundUrls.size;
+                
                 showProgress();
                 
-                // Check if we've reached the limit
+                // Check if we found new URLs
+                if (afterScroll > beforeScroll) {
+                    noNewContentCount = 0; // Reset counter if we found new content
+                    console.log(`✅ Found ${afterScroll - beforeScroll} new Reels (Total: ${afterScroll})`);
+                } else {
+                    noNewContentCount++;
+                    console.log(`⚠️ No new Reels found (${noNewContentCount}/${maxNoNewContent})`);
+                }
+                
+                // Stop if we've reached the limit
                 if (foundUrls.size >= CONFIG.maxReels) {
                     console.log(`🎯 Reached maximum Reels limit (${CONFIG.maxReels})`);
                     break;
                 }
+                
+                // Stop if we haven't found new content for too many attempts
+                if (noNewContentCount >= maxNoNewContent) {
+                    console.log('📄 No new content found after multiple attempts, stopping scroll');
+                    break;
+                }
+                
+                // Add a small delay between scrolls to avoid overwhelming Instagram
+                await new Promise(resolve => setTimeout(resolve, 500));
             }
         } else {
             console.log('📱 Using only visible Reels (auto-scroll disabled)');
@@ -215,13 +249,13 @@
                 console.log('📋 Structured URLs copied to clipboard!');
                 console.log('');
                 console.log('💡 Next steps:');
-                console.log('1. Paste the clipboard content into a text file (e.g., urls.txt)');
+                console.log('1. Paste the clipboard content into a text file in the inputs folder (e.g., inputs/urls.txt)');
                 console.log('2. Run transcription directly:');
-                console.log('   python3 main.py -f urls.txt -u bruno.casasdotejo');
+                console.log('   python3 main.py -f urls.txt -u username');
                 console.log('3. Or transcribe specific videos:');
-                console.log('   python3 main.py -f urls.txt -u bruno.casasdotejo -s "1,3,5"');
-                console.log('   python3 main.py -f urls.txt -u bruno.casasdotejo -s "1-10"');
-                console.log('   python3 main.py -f urls.txt -u bruno.casasdotejo -s "2-5,8,10-12"');
+                console.log('   python3 main.py -f urls.txt -u username -s "1,3,5"');
+                console.log('   python3 main.py -f urls.txt -u username -s "1-10"');
+                console.log('   python3 main.py -f urls.txt -u username -s "2-5,8,10-12"');
             } catch (err) {
                 console.log('❌ Could not copy to clipboard:', err);
                 console.log('📋 Please copy the structured URLs manually from above');

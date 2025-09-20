@@ -49,14 +49,14 @@ javascript:(function(){console.log('🎬 Instagram Reels Extractor');const found
 ### Step 2: Format for Transcriber
 Use the `create_structured_urls.py` script:
 ```bash
-python3 create_structured_urls.py bruno.casasdotejo --interactive
+python3 create_structured_urls.py username --interactive
 ```
 
 ## Using Extracted URLs
 
 ### Option 1: Create Structured URLs File
 ```bash
-python3 create_structured_urls.py bruno.casasdotejo --interactive
+python3 create_structured_urls.py username --interactive
 ```
 
 ### Option 2: Create File Manually
@@ -70,13 +70,13 @@ Create a text file with this format:
 ### Option 3: Run Transcription
 ```bash
 # Transcribe all videos
-python3 main.py -f urls.txt -u bruno.casasdotejo
+python3 main.py -f urls.txt -u username
 
 # Transcribe specific videos
-python3 main.py -f urls.txt -u bruno.casasdotejo -s "1,3,5"
+python3 main.py -f urls.txt -u username -s "1,3,5"
 
 # Transcribe range of videos
-python3 main.py -f urls.txt -u bruno.casasdotejo -s "1-10"
+python3 main.py -f urls.txt -u username -s "1-10"
 ```
 
 ## Troubleshooting
@@ -114,12 +114,12 @@ python3 main.py -f urls.txt -u bruno.casasdotejo -s "1-10"
 
 ## Example Workflow
 
-1. **Go to Instagram**: `https://www.instagram.com/bruno.casasdotejo/reels/`
+1. **Go to Instagram**: `https://www.instagram.com/username/reels/`
 2. **Open Console**: Press F12 → Console tab
 3. **Run Script**: Copy and paste `instagram_reels_extractor.js`
 4. **Wait for Results**: Script will scroll and extract URLs
 5. **Get URLs**: URLs copied to clipboard automatically
 6. **Create File**: Use `create_structured_urls.py` to format
-7. **Transcribe**: Run `python3 main.py -f urls.txt -u bruno.casasdotejo`
+7. **Transcribe**: Run `python3 main.py -f urls.txt -u username`
 
 This method is much faster than manually copying each URL and works reliably with Instagram's current restrictions!

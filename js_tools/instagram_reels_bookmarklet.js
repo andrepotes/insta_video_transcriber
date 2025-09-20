@@ -11,7 +11,7 @@
  */
 
 // Minified version for bookmarklet - Respects DOM order (pinned first, then chronological)
-javascript:(function(){console.log('🎬 Instagram Reels Extractor');const foundUrls=new Set();function extractReels(){const reels=[];document.querySelectorAll('a[href*="/reel/"]').forEach(link=>{const href=link.href;if(href&&href.includes('/reel/')&&!foundUrls.has(href)){foundUrls.add(href);reels.push({url:href,domOrder:reels.length});}});reels.sort((a,b)=>a.domOrder-b.domOrder);return reels.slice(0,200).map(item=>item.url);}function cleanUrls(urls){return urls.map(url=>{let clean=url.split('?')[0];if(!clean.endsWith('/')){clean+='/';}return clean;});}const reels=extractReels();const cleanReels=cleanUrls(reels);const structuredUrls=cleanReels.map((url,i)=>`${i+1}. ${url}`).join('\n');console.log(`✅ Found ${cleanReels.length} Reels:`);cleanReels.forEach((url,i)=>console.log(`${i+1}. ${url}`));if(navigator.clipboard){navigator.clipboard.writeText(structuredUrls).then(()=>{alert(`📋 Copied ${cleanReels.length} structured URLs to clipboard!\n\nPaste into a text file and run:\npython3 main.py -f urls.txt -u username`);}).catch(()=>{console.log('❌ Could not copy to clipboard');});}else{console.log('❌ Clipboard not available');}})();
+javascript:(async function(){console.log('🎬 Instagram Reels Extractor');const foundUrls=new Set();function extractReels(){const reels=[];document.querySelectorAll('a[href*="/reel/"]').forEach(link=>{const href=link.href;if(href&&href.includes('/reel/')&&!foundUrls.has(href)){foundUrls.add(href);reels.push({url:href,domOrder:reels.length});}});reels.sort((a,b)=>a.domOrder-b.domOrder);return reels.slice(0,200).map(item=>item.url);}function cleanUrls(urls){return urls.map(url=>{let clean=url.split('?')[0];if(!clean.endsWith('/')){clean+='/';}return clean;});}async function scrollAndExtract(){let scrollCount=0;const maxScrolls=10;const maxReels=200;let noNewContentCount=0;const maxNoNewContent=2;extractReels();console.log(`📊 Found ${foundUrls.size} Reels initially...`);while(scrollCount<maxScrolls&&foundUrls.size<maxReels){scrollCount++;const beforeScroll=foundUrls.size;window.scrollTo(0,document.body.scrollHeight);setTimeout(()=>{window.scrollTo(0,document.body.scrollHeight-1000);setTimeout(()=>{window.scrollTo(0,document.body.scrollHeight);},200);},200);await new Promise(resolve=>setTimeout(resolve,2500));extractReels();const afterScroll=foundUrls.size;if(afterScroll>beforeScroll){noNewContentCount=0;console.log(`✅ Found ${afterScroll-beforeScroll} new Reels (Total: ${afterScroll})`);}else{noNewContentCount++;console.log(`⚠️ No new Reels found (${noNewContentCount}/${maxNoNewContent})`);}if(noNewContentCount>=maxNoNewContent){console.log('📄 No new content found after multiple attempts, stopping scroll');break;}await new Promise(resolve=>setTimeout(resolve,500));}return cleanUrls(Array.from(foundUrls));}try{const reels=await scrollAndExtract();const structuredUrls=reels.map((url,i)=>`${i+1}. ${url}`).join('\n');console.log(`✅ Found ${reels.length} Reels:`);reels.forEach((url,i)=>console.log(`${i+1}. ${url}`));if(navigator.clipboard){await navigator.clipboard.writeText(structuredUrls);alert(`📋 Copied ${reels.length} structured URLs to clipboard!\n\nPaste into a text file and run:\npython3 main.py -f urls.txt -u username`);}else{console.log('❌ Clipboard not available');}}catch(err){console.log('❌ Error:',err);}})();
 
 /**
  * Full version for reference and development
@@ -56,25 +56,55 @@ function fullVersion() {
     
     async function scrollAndExtract() {
         let scrollCount = 0;
-        const maxScrolls = 8;
+        const maxScrolls = 10;
         const maxReels = 200;
+        let noNewContentCount = 0;
+        const maxNoNewContent = 2;
         
         // Initial extraction
         extractReels();
+        console.log(`📊 Found ${foundUrls.size} Reels initially...`);
         
         // Scroll to load more
         while (scrollCount < maxScrolls && foundUrls.size < maxReels) {
             scrollCount++;
+            const beforeScroll = foundUrls.size;
+            
+            // Scroll to bottom
             window.scrollTo(0, document.body.scrollHeight);
             
+            // Try scroll up and down to trigger lazy loading
+            setTimeout(() => {
+                window.scrollTo(0, document.body.scrollHeight - 1000);
+                setTimeout(() => {
+                    window.scrollTo(0, document.body.scrollHeight);
+                }, 200);
+            }, 200);
+            
             // Wait for content to load
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise(resolve => setTimeout(resolve, 2500));
             
             // Extract new Reels
             extractReels();
+            const afterScroll = foundUrls.size;
             
-            // If no new content, stop scrolling
-            if (foundUrls.size === 0) break;
+            // Check if we found new URLs
+            if (afterScroll > beforeScroll) {
+                noNewContentCount = 0;
+                console.log(`✅ Found ${afterScroll - beforeScroll} new Reels (Total: ${afterScroll})`);
+            } else {
+                noNewContentCount++;
+                console.log(`⚠️ No new Reels found (${noNewContentCount}/${maxNoNewContent})`);
+            }
+            
+            // Stop if no new content for too many attempts
+            if (noNewContentCount >= maxNoNewContent) {
+                console.log('📄 No new content found after multiple attempts, stopping scroll');
+                break;
+            }
+            
+            // Small delay between scrolls
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
         
         return cleanUrls(Array.from(foundUrls));

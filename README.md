@@ -54,13 +54,13 @@ python3 main.py -f urls.txt -u creator_name -o my_transcriptions
 #### Method 2: Create Structured URLs File
 ```bash
 # Interactive creation
-python3 create_structured_urls.py bruno.casasdotejo --interactive
+python3 create_structured_urls.py username --interactive
 
 # From command line
-python3 create_structured_urls.py bruno.casasdotejo --urls "URL1" "URL2" "URL3"
+python3 create_structured_urls.py username --urls "URL1" "URL2" "URL3"
 
 # From existing file
-python3 create_structured_urls.py bruno.casasdotejo --file existing_urls.txt
+python3 create_structured_urls.py username --file existing_urls.txt
 ```
 
 ### Structured URLs File Format
@@ -68,7 +68,7 @@ python3 create_structured_urls.py bruno.casasdotejo --file existing_urls.txt
 Create a text file with numbered Instagram Reel URLs:
 
 ```
-# Instagram Reels URLs for @bruno.casasdotejo
+# Instagram Reels URLs for @username
 # Format: number. URL
 # Generated: 2024-09-20
 
@@ -120,7 +120,7 @@ navigator.clipboard.writeText(reels.join('\n'));
 python3 tests/test_accuracy.py
 
 # Test with sample data
-python3 main.py -f tests/test_data/test_structured_urls.txt -u bruno.casasdotejo
+python3 main.py -f test_structured_urls.txt -u username
 ```
 
 #### Test Data Structure
@@ -211,11 +211,11 @@ transcriptions/
 1. **Get Reels URLs** using browser console method
 2. **Create structured file**:
    ```bash
-   python3 create_structured_urls.py bruno.casasdotejo --interactive
+   python3 create_structured_urls.py username --interactive
    ```
 3. **Transcribe selected videos**:
    ```bash
-   python3 main.py -f bruno_structured_urls.txt -u bruno.casasdotejo -s "1-4"
+   python3 main.py -f urls.txt -u username -s "1-4"
    ```
 
 ### Quick Start
@@ -251,5 +251,5 @@ These tools provide:
 2. **Open Console**: Press F12 → Console tab
 3. **Run Script**: Copy and paste `js_tools/instagram_reels_extractor.js`
 4. **Get Structured URLs**: Automatically copied to clipboard in correct format
-5. **Paste to File**: Save clipboard content as `urls.txt`
+5. **Paste to File**: Save clipboard content as `inputs/urls.txt`
 6. **Transcribe**: Run `python3 main.py -f urls.txt -u username`

@@ -212,6 +212,21 @@ class InstagramTranscriber:
     def load_urls_from_file(self, file_path):
         """Load URLs from structured text file."""
         urls = []
+        
+        # If file_path is just a filename, search in inputs folder
+        if not os.path.isabs(file_path) and not os.path.dirname(file_path):
+            inputs_dir = Path("inputs")
+            if inputs_dir.exists():
+                full_path = inputs_dir / file_path
+                if full_path.exists():
+                    file_path = str(full_path)
+                else:
+                    print(f"File '{file_path}' not found in inputs folder")
+                    return []
+            else:
+                print("Inputs folder not found")
+                return []
+        
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 for line_num, line in enumerate(f, 1):
