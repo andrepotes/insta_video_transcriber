@@ -87,7 +87,16 @@ Since Instagram restricts automated extraction, use these methods:
 #### Browser Console Method (Easiest)
 1. Go to the Instagram profile's Reels page
 2. Open Developer Tools (F12) → Console tab
-3. Run this JavaScript:
+3. Copy and paste the contents of `instagram_reels_extractor.js`
+4. Press Enter to run - URLs will be automatically extracted and copied
+5. Use `create_structured_urls.py` to format them properly
+
+#### Browser Bookmarklet Method
+1. Create a bookmark with the code from `instagram_reels_bookmarklet.js`
+2. Go to Instagram Reels page and click the bookmark
+3. URLs will be automatically extracted and copied
+
+#### Simple Console Method
 ```javascript
 const reels = [];
 document.querySelectorAll('a[href*="/reel/"]').forEach(link => {
@@ -100,8 +109,6 @@ console.log('Found Reels URLs:');
 reels.forEach((url, index) => console.log(`${index + 1}. ${url}`));
 navigator.clipboard.writeText(reels.join('\n'));
 ```
-4. URLs will be copied to clipboard - paste into a text file
-5. Use `create_structured_urls.py` to format them properly
 
 ### Testing
 
@@ -220,3 +227,27 @@ python3 main.py -f sample.txt -u username
 ```
 
 This tool provides a clean, structured approach to batch Instagram video transcription with flexible selection options!
+
+## JavaScript Extraction Tools
+
+The project includes powerful JavaScript tools for extracting Reels URLs:
+
+- **`instagram_reels_extractor.js`** - Full-featured extraction script with auto-scroll
+- **`instagram_reels_bookmarklet.js`** - Minified version for browser bookmarks  
+- **`INSTAGRAM_REELS_EXTRACTION_GUIDE.md`** - Comprehensive usage guide
+
+These tools provide:
+- ✅ **Automatic scrolling** to load more Reels
+- ✅ **URL cleaning** and deduplication
+- ✅ **Clipboard integration** for easy copying
+- ✅ **Progress tracking** and visual feedback
+- ✅ **Multiple extraction methods** for reliability
+
+### Quick Start with JavaScript Tools
+
+1. **Go to Instagram Reels page**: `https://www.instagram.com/username/reels/`
+2. **Open Console**: Press F12 → Console tab
+3. **Run Script**: Copy and paste `instagram_reels_extractor.js`
+4. **Get URLs**: Automatically extracted and copied to clipboard
+5. **Create File**: Use `create_structured_urls.py` to format
+6. **Transcribe**: Run the transcriber with your URLs file
