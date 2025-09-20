@@ -239,7 +239,7 @@ The project includes JavaScript tools for extracting Reels URLs:
 - **`js_tools/INSTAGRAM_REELS_EXTRACTION_GUIDE.md`** - Comprehensive usage guide
 
 These tools provide:
-- ✅ **Automatic scrolling** to load more Reels
+- ✅ **Automatic scrolling** to load more Reels (up to 100 videos)
 - ✅ **URL cleaning** and deduplication
 - ✅ **Clipboard integration** for easy copying
 - ✅ **Progress tracking** and visual feedback

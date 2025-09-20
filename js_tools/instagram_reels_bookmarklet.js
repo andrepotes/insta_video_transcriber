@@ -11,7 +11,7 @@
  */
 
 // Minified version for bookmarklet - Respects DOM order (pinned first, then chronological)
-javascript:(function(){console.log('🎬 Instagram Reels Extractor');const foundUrls=new Set();function extractReels(){const reels=[];document.querySelectorAll('a[href*="/reel/"]').forEach(link=>{const href=link.href;if(href&&href.includes('/reel/')&&!foundUrls.has(href)){foundUrls.add(href);reels.push({url:href,domOrder:reels.length});}});reels.sort((a,b)=>a.domOrder-b.domOrder);return reels.slice(0,20).map(item=>item.url);}function cleanUrls(urls){return urls.map(url=>{let clean=url.split('?')[0];if(!clean.endsWith('/')){clean+='/';}return clean;});}const reels=extractReels();const cleanReels=cleanUrls(reels);const structuredUrls=cleanReels.map((url,i)=>`${i+1}. ${url}`).join('\n');console.log(`✅ Found ${cleanReels.length} Reels:`);cleanReels.forEach((url,i)=>console.log(`${i+1}. ${url}`));if(navigator.clipboard){navigator.clipboard.writeText(structuredUrls).then(()=>{alert(`📋 Copied ${cleanReels.length} structured URLs to clipboard!\n\nPaste into a text file and run:\npython3 main.py -f urls.txt -u username`);}).catch(()=>{console.log('❌ Could not copy to clipboard');});}else{console.log('❌ Clipboard not available');}})();
+javascript:(function(){console.log('🎬 Instagram Reels Extractor');const foundUrls=new Set();function extractReels(){const reels=[];document.querySelectorAll('a[href*="/reel/"]').forEach(link=>{const href=link.href;if(href&&href.includes('/reel/')&&!foundUrls.has(href)){foundUrls.add(href);reels.push({url:href,domOrder:reels.length});}});reels.sort((a,b)=>a.domOrder-b.domOrder);return reels.slice(0,100).map(item=>item.url);}function cleanUrls(urls){return urls.map(url=>{let clean=url.split('?')[0];if(!clean.endsWith('/')){clean+='/';}return clean;});}const reels=extractReels();const cleanReels=cleanUrls(reels);const structuredUrls=cleanReels.map((url,i)=>`${i+1}. ${url}`).join('\n');console.log(`✅ Found ${cleanReels.length} Reels:`);cleanReels.forEach((url,i)=>console.log(`${i+1}. ${url}`));if(navigator.clipboard){navigator.clipboard.writeText(structuredUrls).then(()=>{alert(`📋 Copied ${cleanReels.length} structured URLs to clipboard!\n\nPaste into a text file and run:\npython3 main.py -f urls.txt -u username`);}).catch(()=>{console.log('❌ Could not copy to clipboard');});}else{console.log('❌ Clipboard not available');}})();
 
 /**
  * Full version for reference and development
@@ -57,12 +57,13 @@ function fullVersion() {
     async function scrollAndExtract() {
         let scrollCount = 0;
         const maxScrolls = 5;
+        const maxReels = 100;
         
         // Initial extraction
         extractReels();
         
         // Scroll to load more
-        while (scrollCount < maxScrolls && foundUrls.size < 50) {
+        while (scrollCount < maxScrolls && foundUrls.size < maxReels) {
             scrollCount++;
             window.scrollTo(0, document.body.scrollHeight);
             

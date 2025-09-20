@@ -21,10 +21,10 @@
     
     // Configuration
     const CONFIG = {
-        maxReels: 20,           // Maximum number of Reels to extract (focus on recent ones)
+        maxReels: 100,          // Maximum number of Reels to extract (increased for more videos)
         scrollDelay: 1500,      // Delay between scrolls (ms) - faster for recent content
-        maxScrolls: 3,          // Maximum number of scroll attempts (focus on top content)
-        autoScroll: false,      // Don't auto-scroll - focus on visible content first
+        maxScrolls: 5,          // Maximum number of scroll attempts (increased for more content)
+        autoScroll: true,       // Enable auto-scroll to load more Reels
         showProgress: true,     // Show progress during extraction
         prioritizeVisible: true // Prioritize currently visible Reels
     };
