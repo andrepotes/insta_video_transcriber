@@ -103,6 +103,30 @@ navigator.clipboard.writeText(reels.join('\n'));
 4. URLs will be copied to clipboard - paste into a text file
 5. Use `create_structured_urls.py` to format them properly
 
+### Testing
+
+#### Run Accuracy Tests
+```bash
+# Run comprehensive accuracy testing
+python3 tests/test_accuracy.py
+
+# Test with sample data
+python3 main.py -f tests/test_data/test_structured_urls.txt -u bruno.casasdotejo
+```
+
+#### Test Data Structure
+```
+tests/
+├── test_accuracy.py              # Accuracy testing script
+├── test_data/
+│   ├── sample_1.txt             # Expected transcription 1
+│   ├── sample_2.txt             # Expected transcription 2
+│   ├── sample_3.txt             # Expected transcription 3
+│   ├── sample_4.txt             # Expected transcription 4
+│   ├── test_structured_urls.txt # Sample URLs for testing
+│   └── sample_structured_urls.txt # Additional sample URLs
+```
+
 ### Command Line Options
 
 ```bash

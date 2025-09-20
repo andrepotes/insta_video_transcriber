@@ -71,7 +71,7 @@ def test_transcription_accuracy():
     ]
     
     # Create structured URLs file for testing
-    urls_file = "test_accuracy_urls.txt"
+    urls_file = "tests/test_accuracy_urls.txt"
     with open(urls_file, 'w', encoding='utf-8') as f:
         f.write("# Test URLs for accuracy testing\n")
         for i, test in enumerate(test_files, 1):
