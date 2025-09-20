@@ -10,8 +10,8 @@
  * 4. Click the bookmark on any Instagram Reels page
  */
 
-// Minified version for bookmarklet - Prioritizes visible Reels
-javascript:(function(){console.log('🎬 Instagram Reels Extractor');const foundUrls=new Set();function extractReels(){const reels=[];const mainSelectors=['main a[href*="/reel/"]','article a[href*="/reel/"]','[role="main"] a[href*="/reel/"]','section a[href*="/reel/"]'];mainSelectors.forEach(selector=>{document.querySelectorAll(selector).forEach(link=>{const href=link.href;if(href&&href.includes('/reel/')&&!foundUrls.has(href)){foundUrls.add(href);reels.push({url:href,priority:1,position:getPosition(link)});}});});document.querySelectorAll('a[href*="/reel/"]').forEach(link=>{const rect=link.getBoundingClientRect();const isVisible=rect.top>=0&&rect.left>=0&&rect.bottom<=window.innerHeight&&rect.right<=window.innerWidth;if(isVisible){const href=link.href;if(href&&href.includes('/reel/')&&!foundUrls.has(href)){foundUrls.add(href);reels.push({url:href,priority:0,position:getPosition(link)});}}});reels.sort((a,b)=>{if(a.priority!==b.priority)return a.priority-b.priority;return a.position-b.position;});return reels.slice(0,20).map(item=>item.url);}function getPosition(el){let pos=0;let current=el;while(current&&current.parentNode){pos+=Array.from(current.parentNode.children).indexOf(current);current=current.parentNode;}return pos;}function cleanUrls(urls){return urls.map(url=>{let clean=url.split('?')[0];if(!clean.endsWith('/')){clean+='/';}return clean;});}const reels=extractReels();const cleanReels=cleanUrls(reels);console.log(`✅ Found ${cleanReels.length} Reels:`);cleanReels.forEach((url,i)=>console.log(`${i+1}. ${url}`));if(navigator.clipboard){navigator.clipboard.writeText(cleanReels.join('\n')).then(()=>{alert(`📋 Copied ${cleanReels.length} Reels URLs to clipboard!`);}).catch(()=>{console.log('❌ Could not copy to clipboard');});}else{console.log('❌ Clipboard not available');}})();
+// Minified version for bookmarklet - Respects DOM order (pinned first, then chronological)
+javascript:(function(){console.log('🎬 Instagram Reels Extractor');const foundUrls=new Set();function extractReels(){const reels=[];document.querySelectorAll('a[href*="/reel/"]').forEach(link=>{const href=link.href;if(href&&href.includes('/reel/')&&!foundUrls.has(href)){foundUrls.add(href);reels.push({url:href,domOrder:reels.length});}});reels.sort((a,b)=>a.domOrder-b.domOrder);return reels.slice(0,20).map(item=>item.url);}function cleanUrls(urls){return urls.map(url=>{let clean=url.split('?')[0];if(!clean.endsWith('/')){clean+='/';}return clean;});}const reels=extractReels();const cleanReels=cleanUrls(reels);console.log(`✅ Found ${cleanReels.length} Reels:`);cleanReels.forEach((url,i)=>console.log(`${i+1}. ${url}`));if(navigator.clipboard){navigator.clipboard.writeText(cleanReels.join('\n')).then(()=>{alert(`📋 Copied ${cleanReels.length} Reels URLs to clipboard!`);}).catch(()=>{console.log('❌ Could not copy to clipboard');});}else{console.log('❌ Clipboard not available');}})();
 
 /**
  * Full version for reference and development
@@ -25,45 +25,23 @@ function fullVersion() {
     function extractReels() {
         const reels = [];
         
-        // Method 1: Direct links
+        // Get all Reels in DOM order (respects Instagram's sorting)
+        // This includes pinned Reels first, then chronological order
         document.querySelectorAll('a[href*="/reel/"]').forEach(link => {
             const href = link.href;
             if (href && href.includes('/reel/') && !foundUrls.has(href)) {
                 foundUrls.add(href);
-                reels.push(href);
-            }
-        });
-        
-        // Method 2: Script tags
-        document.querySelectorAll('script').forEach(script => {
-            if (script.textContent) {
-                const patterns = [
-                    /https:\/\/www\.instagram\.com\/reel\/[A-Za-z0-9_-]+\/?/g,
-                    /\/reel\/[A-Za-z0-9_-]+\/?/g
-                ];
-                
-                patterns.forEach(pattern => {
-                    const matches = script.textContent.match(pattern);
-                    if (matches) {
-                        matches.forEach(match => {
-                            let url = match;
-                            if (url.startsWith('/')) {
-                                url = 'https://www.instagram.com' + url;
-                            } else if (!url.startsWith('http')) {
-                                url = 'https://www.instagram.com/reel/' + url;
-                            }
-                            
-                            if (url.includes('/reel/') && !foundUrls.has(url)) {
-                                foundUrls.add(url);
-                                reels.push(url);
-                            }
-                        });
-                    }
+                reels.push({
+                    url: href,
+                    domOrder: reels.length
                 });
             }
         });
         
-        return reels;
+        // Sort by DOM order (first appearing on page = first in list)
+        reels.sort((a, b) => a.domOrder - b.domOrder);
+        
+        return reels.map(item => item.url);
     }
     
     function cleanUrls(urls) {

@@ -35,60 +35,28 @@
     let lastUrlCount = 0;
     
     /**
-     * Extract Reels URLs from the current page, prioritizing visible ones
+     * Extract Reels URLs from the current page in DOM order
      */
     function extractReelsUrls() {
         const reels = [];
         
-        // Method 1: Look for visible Reels in the main content area (PRIORITY)
-        // These are the most recent Reels that are currently visible
-        const mainContentSelectors = [
-            'main a[href*="/reel/"]',           // Main content area
-            'article a[href*="/reel/"]',        // Article elements
-            '[role="main"] a[href*="/reel/"]',  // Main role elements
-            'section a[href*="/reel/"]'         // Section elements
-        ];
+        // Method 1: Get all Reels in DOM order (respects Instagram's sorting)
+        // This includes pinned Reels first, then chronological order
+        const allReelLinks = document.querySelectorAll('a[href*="/reel/"]');
         
-        mainContentSelectors.forEach(selector => {
-            const links = document.querySelectorAll(selector);
-            links.forEach(link => {
-                const href = link.href;
-                if (href && href.includes('/reel/') && !foundUrls.has(href)) {
-                    foundUrls.add(href);
-                    reels.push({
-                        url: href,
-                        element: link,
-                        priority: 1, // High priority for visible elements
-                        position: getElementPosition(link)
-                    });
-                }
-            });
-        });
-        
-        // Method 2: Look for Reels in the viewport (currently visible)
-        const viewportReels = document.querySelectorAll('a[href*="/reel/"]');
-        viewportReels.forEach(link => {
-            const rect = link.getBoundingClientRect();
-            const isInViewport = rect.top >= 0 && rect.left >= 0 && 
-                               rect.bottom <= window.innerHeight && 
-                               rect.right <= window.innerWidth;
-            
-            if (isInViewport) {
-                const href = link.href;
-                if (href && href.includes('/reel/') && !foundUrls.has(href)) {
-                    foundUrls.add(href);
-                    reels.push({
-                        url: href,
-                        element: link,
-                        priority: 0, // Highest priority for viewport elements
-                        position: getElementPosition(link)
-                    });
-                }
+        allReelLinks.forEach(link => {
+            const href = link.href;
+            if (href && href.includes('/reel/') && !foundUrls.has(href)) {
+                foundUrls.add(href);
+                reels.push({
+                    url: href,
+                    element: link,
+                    domOrder: reels.length // Track DOM order
+                });
             }
         });
         
-        // Method 3: Look in script tags for additional Reels (LOWER PRIORITY)
-        // Only if we don't have enough visible Reels
+        // Method 2: If we don't have enough from DOM, look in script tags
         if (reels.length < CONFIG.maxReels) {
             const scripts = document.querySelectorAll('script');
             scripts.forEach(script => {
@@ -115,8 +83,7 @@
                                     reels.push({
                                         url: url,
                                         element: null,
-                                        priority: 3, // Lower priority for script content
-                                        position: 999999
+                                        domOrder: 999999 + reels.length // Lower priority for script content
                                     });
                                 }
                             });
@@ -126,30 +93,13 @@
             });
         }
         
-        // Sort by priority and position (most recent first)
-        reels.sort((a, b) => {
-            if (a.priority !== b.priority) {
-                return a.priority - b.priority; // Lower priority number = higher priority
-            }
-            return a.position - b.position; // Lower position = higher on page (most recent)
-        });
+        // Sort by DOM order (first appearing on page = first in list)
+        reels.sort((a, b) => a.domOrder - b.domOrder);
         
         // Return only URLs, limited to maxReels
         return reels.slice(0, CONFIG.maxReels).map(item => item.url);
     }
     
-    /**
-     * Get the position of an element on the page
-     */
-    function getElementPosition(element) {
-        let position = 0;
-        let current = element;
-        while (current && current.parentNode) {
-            position += Array.from(current.parentNode.children).indexOf(current);
-            current = current.parentNode;
-        }
-        return position;
-    }
     
     /**
      * Clean and standardize URLs
