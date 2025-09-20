@@ -87,12 +87,12 @@ Since Instagram restricts automated extraction, use these methods:
 #### Browser Console Method (Easiest)
 1. Go to the Instagram profile's Reels page
 2. Open Developer Tools (F12) → Console tab
-3. Copy and paste the contents of `instagram_reels_extractor.js`
+3. Copy and paste the contents of `js_tools/instagram_reels_extractor.js`
 4. Press Enter to run - URLs will be automatically extracted and copied
 5. Use `create_structured_urls.py` to format them properly
 
 #### Browser Bookmarklet Method
-1. Create a bookmark with the code from `instagram_reels_bookmarklet.js`
+1. Create a bookmark with the code from `js_tools/instagram_reels_bookmarklet.js`
 2. Go to Instagram Reels page and click the bookmark
 3. URLs will be automatically extracted and copied
 
@@ -232,9 +232,9 @@ This tool provides a clean, structured approach to batch Instagram video transcr
 
 The project includes powerful JavaScript tools for extracting Reels URLs:
 
-- **`instagram_reels_extractor.js`** - Full-featured extraction script with auto-scroll
-- **`instagram_reels_bookmarklet.js`** - Minified version for browser bookmarks  
-- **`INSTAGRAM_REELS_EXTRACTION_GUIDE.md`** - Comprehensive usage guide
+- **`js_tools/instagram_reels_extractor.js`** - Full-featured extraction script with auto-scroll
+- **`js_tools/instagram_reels_bookmarklet.js`** - Minified version for browser bookmarks  
+- **`js_tools/INSTAGRAM_REELS_EXTRACTION_GUIDE.md`** - Comprehensive usage guide
 
 These tools provide:
 - ✅ **Automatic scrolling** to load more Reels
@@ -247,7 +247,7 @@ These tools provide:
 
 1. **Go to Instagram Reels page**: `https://www.instagram.com/username/reels/`
 2. **Open Console**: Press F12 → Console tab
-3. **Run Script**: Copy and paste `instagram_reels_extractor.js`
+3. **Run Script**: Copy and paste `js_tools/instagram_reels_extractor.js`
 4. **Get URLs**: Automatically extracted and copied to clipboard
 5. **Create File**: Use `create_structured_urls.py` to format
 6. **Transcribe**: Run the transcriber with your URLs file
